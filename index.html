@@ -1372,7 +1372,7 @@
 
     .bleft h2 {
       font-family: 'Syne', sans-serif;
-      font-size: 2.6rem;
+      font-size: 2.1rem;
       font-weight: 800;
       color: white;
       line-height: 1.1;
@@ -1769,14 +1769,47 @@
       color: var(--teal-l);
     }
 
+    /* ════════ MOBILE MENU BUTTON ════════ */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .mobile-menu-btn svg {
+      width: 28px;
+      height: 28px;
+      fill: var(--text);
+    }
+
     /* ════════ RESPONSIVE ════════ */
     @media(max-width:960px) {
       nav {
         padding: 0 20px;
       }
 
+      .mobile-menu-btn {
+        display: block;
+      }
+
       .nav-links {
         display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 72px;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        gap: 20px;
+        align-items: flex-start;
+      }
+
+      .nav-links.open {
+        display: flex;
       }
 
       .hero {
@@ -1785,6 +1818,17 @@
 
       .hero-right {
         display: none;
+      }
+
+      .hero-badges {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        margin-top: 40px;
+      }
+
+      .hero-left {
+        padding-bottom: 60px;
       }
 
       .hero-left,
@@ -1837,6 +1881,30 @@
         gap: 28px;
       }
     }
+
+    @media(max-width:600px) {
+
+      .svt-grid,
+      .team-grid,
+      .testi-grid,
+      .ba-grid,
+      .svc-items-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-band,
+      .proof-row {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .sec-h {
+        font-size: 2rem;
+      }
+    }
   </style>
 </head>
 
@@ -1856,7 +1924,12 @@
         <span class="logo-sub">Studio · Melbourne</span>
       </div>
     </div>
-    <ul class="nav-links">
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle Menu">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+      </svg>
+    </button>
+    <ul class="nav-links" id="navLinks">
       <li><a href="#" class="active" onclick="go('home',this)">Home</a></li>
       <li><a href="#" onclick="go('whypick',this)">Why Choose Us</a></li>
       <li><a href="#" onclick="go('services',this)">Our Services</a></li>
@@ -2712,22 +2785,13 @@
               </div>
             </div>
           </div>
-          <div>
-            <div class="b-avail">
-              <h4>Availability This Week</h4>
-              <div class="b-avail-row"><span class="b-avail-day">Monday 28 Apr</span><span
-                  class="avbadge av-open">Available</span></div>
-              <div class="b-avail-row"><span class="b-avail-day">Tuesday 29 Apr</span><span class="avbadge av-few">2
-                  slots left</span></div>
-              <div class="b-avail-row"><span class="b-avail-day">Wednesday 30 Apr</span><span
-                  class="avbadge av-full">Fully Booked</span></div>
-              <div class="b-avail-row"><span class="b-avail-day">Thursday 1 May</span><span
-                  class="avbadge av-open">Available</span></div>
-              <div class="b-avail-row"><span class="b-avail-day">Friday 2 May</span><span class="avbadge av-few">3 slots
-                  left</span></div>
-              <div class="b-avail-row"><span class="b-avail-day">Saturday 3 May</span><span
-                  class="avbadge av-open">Available</span></div>
-            </div>
+          <div class="b-map"
+            style="margin-top: 32px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); background: #f0f0f0;">
+            <iframe
+              src="https://maps.google.com/maps?q=188%20Collins%20St,%20Melbourne%20VIC%203000&t=&z=15&ie=UTF8&iwloc=&output=embed"
+              width="100%" height="320" style="border:0; display: block;" allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
           </div>
         </div>
       </div>
@@ -2918,6 +2982,20 @@
           alert('Oops! There was a problem. Please check your connection or try again.');
         });
     }
+    function toggleMobileMenu() {
+      const navLinks = document.getElementById('navLinks');
+      navLinks.classList.toggle('open');
+    }
+
+    // Close menu when clicking a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        const navLinks = document.getElementById('navLinks');
+        if (navLinks.classList.contains('open')) {
+          navLinks.classList.remove('open');
+        }
+      });
+    });
   </script>
 </body>
 
