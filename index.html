@@ -2853,7 +2853,7 @@
             <option>Dr James Liu (Invisalign & Orthodontics)</option>
           </select>
         </div>
-        <div class="fg"><label>Preferred Date</label><input type="date" id="ddate"></div>
+        <div class="fg"><label>Preferred Date</label><input type="date" id="ddate" min=""></div>
         <div class="fg">
           <label>Preferred Time</label>
           <div class="time-picker">
@@ -2995,6 +2995,15 @@
           navLinks.classList.remove('open');
         }
       });
+    });
+
+    // Set min date for appointment to today
+    window.addEventListener('DOMContentLoaded', () => {
+      const ddate = document.getElementById('ddate');
+      if (ddate) {
+        const today = new Date().toISOString().split('T')[0];
+        ddate.setAttribute('min', today);
+      }
     });
   </script>
 </body>
