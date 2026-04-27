@@ -1905,6 +1905,187 @@
         font-size: 2rem;
       }
     }
+
+    .chatbot-toggle {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: white;
+      border: none;
+      outline: none;
+      box-shadow: 0 18px 35px rgba(10, 124, 140, 0.3);
+      cursor: pointer;
+      z-index: 1005;
+      display: grid;
+      place-items: center;
+      font-size: 1.6rem;
+    }
+
+    .chatbot-toggle:focus {
+      outline: none;
+      box-shadow: 0 18px 35px rgba(10, 124, 140, 0.3);
+    }
+
+    .chatbot-panel {
+      position: fixed;
+      right: 22px;
+      bottom: 92px;
+      width: 360px;
+      max-height: 520px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      z-index: 1005;
+      transform: translateY(20px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .24s ease, transform .24s ease, visibility .24s ease;
+    }
+
+    .chatbot-panel.open {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .chatbot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid #ebeff0;
+      background: linear-gradient(135deg, var(--teal), var(--teal-l));
+      color: white;
+    }
+
+    .chatbot-header h3 {
+      font-size: 1rem;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .chatbot-header small {
+      display: block;
+      opacity: .85;
+      font-size: .78rem;
+      margin-top: 3px;
+      color: rgba(255, 255, 255, .9);
+    }
+
+    .chatbot-header button {
+      border: none;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0;
+    }
+
+    .chatbot-messages {
+      padding: 16px 16px 8px;
+      flex: 1;
+      overflow-y: auto;
+      background: #f8fbfb;
+    }
+
+    .chatbot-message {
+      max-width: 86%;
+      margin-bottom: 12px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      line-height: 1.5;
+      font-size: .92rem;
+      box-shadow: 0 8px 18px rgba(50, 66, 70, 0.05);
+      word-wrap: break-word;
+    }
+
+    .chatbot-message.user {
+      margin-left: auto;
+      background: var(--teal);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chatbot-message.system {
+      margin-right: auto;
+      background: white;
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+    }
+
+    .chatbot-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .chatbot-button {
+      background: #eef9fb;
+      border: 1px solid #d5eef0;
+      color: var(--teal-d);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: .82rem;
+      cursor: pointer;
+      text-align: left;
+      transition: background .2s, transform .2s;
+    }
+
+    .chatbot-button:hover {
+      background: var(--teal);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .chatbot-input-area {
+      border-top: 1px solid #ebeff0;
+      padding: 12px 14px 14px;
+      background: white;
+    }
+
+    .chatbot-input-area textarea {
+      width: 100%;
+      min-height: 54px;
+      border: 1px solid #dfe6e8;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+    }
+
+    .chatbot-input-area .chatbot-send {
+      margin-top: 10px;
+      width: 100%;
+      background: var(--teal);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: .4px;
+    }
+
+    @media(max-width: 720px) {
+      .chatbot-panel {
+        right: 12px;
+        left: 12px;
+        width: auto;
+      }
+      .chatbot-toggle {
+        right: 16px;
+        bottom: 16px;
+      }
+    }
   </style>
 </head>
 
@@ -2900,6 +3081,23 @@
     </div>
   </div><!-- /booking -->
 
+  <button class="chatbot-toggle" aria-label="Open chat">💬</button>
+  <div class="chatbot-panel" id="chatbotPanel" aria-hidden="true">
+    <div class="chatbot-header">
+      <div>
+        <h3>Clinic Assistant</h3>
+        <small>Ask about services or book an appointment</small>
+      </div>
+      <button type="button" aria-label="Close chat" id="closeChatbot">×</button>
+    </div>
+    <div class="chatbot-messages" id="chatbotMessages"></div>
+    <div class="chatbot-input-area">
+      <textarea id="chatbotInput" placeholder="Type your question here..."></textarea>
+      <button class="chatbot-send" id="chatbotSend">Send message</button>
+      <div class="chatbot-actions" id="chatbotActions"></div>
+    </div>
+  </div>
+
   <script>
     function go(id, el) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -3004,7 +3202,164 @@
         const today = new Date().toISOString().split('T')[0];
         ddate.setAttribute('min', today);
       }
+
+      const chatToggle = document.querySelector('.chatbot-toggle');
+      const chatPanel = document.getElementById('chatbotPanel');
+      const closeChat = document.getElementById('closeChatbot');
+      const chatSend = document.getElementById('chatbotSend');
+      const chatInput = document.getElementById('chatbotInput');
+
+      if (chatToggle) {
+        chatToggle.addEventListener('click', () => {
+          openChatbot();
+        });
+      }
+
+      if (closeChat) {
+        closeChat.addEventListener('click', () => {
+          closeChatbot();
+        });
+      }
+
+      if (chatSend) {
+        chatSend.addEventListener('click', () => {
+          const value = chatInput.value.trim();
+          if (value) {
+            handleChatbotInput(value);
+          }
+        });
+      }
+
+      if (chatInput) {
+        chatInput.addEventListener('keydown', e => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            const value = chatInput.value.trim();
+            if (value) {
+              handleChatbotInput(value);
+            }
+          }
+        });
+      }
     });
+
+    function openChatbot() {
+      const panel = document.getElementById('chatbotPanel');
+      if (!panel) return;
+      panel.classList.add('open');
+      panel.setAttribute('aria-hidden', 'false');
+      if (document.getElementById('chatbotMessages').children.length === 0) {
+        setTimeout(startChatbotSession, 250);
+      }
+    }
+
+    function closeChatbot() {
+      const panel = document.getElementById('chatbotPanel');
+      if (!panel) return;
+      panel.classList.remove('open');
+      panel.setAttribute('aria-hidden', 'true');
+    }
+
+    function addMessage(text, sender = 'system') {
+      const container = document.getElementById('chatbotMessages');
+      if (!container) return;
+      const message = document.createElement('div');
+      message.className = `chatbot-message ${sender}`;
+      message.innerText = text;
+      container.appendChild(message);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function setChatbotButtons(options) {
+      const actionArea = document.getElementById('chatbotActions');
+      if (!actionArea) return;
+      actionArea.innerHTML = '';
+      options.forEach(option => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'chatbot-button';
+        button.innerText = option.label;
+        button.addEventListener('click', () => {
+          addMessage(option.label, 'user');
+          option.onClick();
+        });
+        actionArea.appendChild(button);
+      });
+    }
+
+    function startChatbotSession() {
+      addMessage('Hello! I’m the clinic assistant. I can answer questions about the clinic, our services, or help you book an appointment.');
+      setChatbotButtons([
+        { label: 'About the clinic', onClick: () => replyToUser('about the clinic') },
+        { label: 'Services offered', onClick: () => replyToUser('services offered') },
+        { label: 'Book an appointment', onClick: () => replyToUser('book an appointment') },
+        { label: 'Opening hours & contact', onClick: () => replyToUser('opening hours') }
+      ]);
+    }
+
+    function handleChatbotInput(text) {
+      addMessage(text, 'user');
+      const input = document.getElementById('chatbotInput');
+      if (input) input.value = '';
+      setChatbotButtons([]);
+      setTimeout(() => {
+        replyToUser(text);
+      }, 250);
+    }
+
+    function replyToUser(text) {
+      const lower = text.toLowerCase();
+      if (/appointment|book|visit|schedule/.test(lower)) {
+        addMessage('I can help with appointment booking. Would you like me to open the appointment form so you can select a date and time?', 'system');
+        setChatbotButtons([
+          { label: 'Open booking form', onClick: () => { addMessage('Yes, please open the booking form.', 'user'); openBooking(); } },
+          { label: 'Ask about services', onClick: () => replyToUser('services offered') }
+        ]);
+        return;
+      }
+
+      if (/service|treatment|clean|whitening|implants|orthodontic|invisalign|check[- ]?up|root canal/.test(lower)) {
+        addMessage('We offer general dentistry, cosmetic treatments, implants, children’s dentistry, Invisalign and emergency care. Would you like help finding the right service or booking a consultation?', 'system');
+        setChatbotButtons([
+          { label: 'How do I book?', onClick: () => replyToUser('book an appointment') },
+          { label: 'Tell me about cosmetic dental', onClick: () => replyToUser('cosmetic dentistry') }
+        ]);
+        return;
+      }
+
+      if (/about|clinic|location|team|practice|experience|our story/.test(lower)) {
+        addMessage('Lumina Dental Studio is a modern Melbourne clinic delivering premium cosmetic and general dentistry. Our team focuses on gentle care, personalised treatment and practical appointment times.', 'system');
+        setChatbotButtons([
+          { label: 'Opening hours & contact', onClick: () => replyToUser('opening hours') },
+          { label: 'Book an appointment', onClick: () => replyToUser('book an appointment') }
+        ]);
+        return;
+      }
+
+      if (/hours|open|opening|close|contact|phone|call|address/.test(lower)) {
+        addMessage('We are open Monday to Friday from 8am to 6pm. You can call us at (03) 9110 2200 or use the appointment form to request a consult. Would you like the booking page?', 'system');
+        setChatbotButtons([
+          { label: 'Yes, open booking', onClick: () => { addMessage('Yes, open booking.', 'user'); openBooking(); } },
+          { label: 'Ask about services', onClick: () => replyToUser('services offered') }
+        ]);
+        return;
+      }
+
+      addMessage('I’m here to help with clinic information, available services, or setting up an appointment. You can ask me about our treatments, booking times, or just say “book appointment”.', 'system');
+      setChatbotButtons([
+        { label: 'Book an appointment', onClick: () => replyToUser('book an appointment') },
+        { label: 'What services do you offer?', onClick: () => replyToUser('services offered') }
+      ]);
+    }
+
+    function openBooking() {
+      go('booking', null);
+      closeChatbot();
+      setTimeout(() => {
+        const ddate = document.getElementById('ddate');
+        if (ddate) ddate.focus();
+      }, 400);
+    }
   </script>
 </body>
 
