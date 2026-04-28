@@ -3318,7 +3318,16 @@
         return;
       }
 
-      if (/service|treatment|clean|whitening|implants|orthodontic|invisalign|check[- ]?up|root canal/.test(lower)) {
+      if (/cosmetic|whitening|veneers|smile design|aesthetic|teeth whitening|zodiac|implants/.test(lower)) {
+        addMessage('Our cosmetic dentistry includes smile makeovers, teeth whitening, veneers, clear aligner treatments, and cosmetic bonding. These services are designed to improve the appearance of your teeth as well as your confidence.', 'system');
+        setChatbotButtons([
+          { label: 'How do I book?', onClick: () => replyToUser('book an appointment') },
+          { label: 'Tell me about general dentistry', onClick: () => replyToUser('services offered') }
+        ]);
+        return;
+      }
+
+      if (/service|treatment|clean|implants|orthodontic|invisalign|check[- ]?up|root canal/.test(lower)) {
         addMessage('We offer general dentistry, cosmetic treatments, implants, children’s dentistry, Invisalign and emergency care. Would you like help finding the right service or booking a consultation?', 'system');
         setChatbotButtons([
           { label: 'How do I book?', onClick: () => replyToUser('book an appointment') },
