@@ -3647,12 +3647,10 @@
         return;
       }
 
-      setCallStatus('Connecting to AI receptionist...', 'connecting');
+      setCallStatus('Connecting...', 'connecting');
       startBtn.disabled = true;
 
       try {
-        // Step 1 — create a Retell web call directly (Retell API supports browser CORS)
-        setCallStatus('Step 1/2: Requesting access token...', 'connecting');
         let res, data;
         try {
           res = await fetch('https://api.retellai.com/v2/create-web-call', {
@@ -3687,8 +3685,7 @@
           return;
         }
 
-        // Step 2 — start the Retell call via SDK
-        setCallStatus('Step 2/2: Starting voice call...', 'connecting');
+        setCallStatus('Connecting...', 'connecting');
 
         if (!window.RetellWebClient) {
           setCallStatus('❌ Retell SDK not loaded yet. Please refresh and try again.', 'ended');
@@ -3699,7 +3696,7 @@
 
         retellClient.on('call_started', () => {
           callActive = true;
-          setCallStatus('🟢 Connected — speak naturally!', 'live');
+          setCallStatus('Connected', 'live');
           startBtn.style.display = 'none';
           endBtn.style.display = 'inline-block';
           if (toggleBtn) toggleBtn.classList.add('calling');
